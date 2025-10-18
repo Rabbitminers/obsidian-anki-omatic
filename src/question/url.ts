@@ -1,8 +1,8 @@
 import { TFile } from "obsidian";
 
 export function getFileUrl(file: TFile) {
-	const vaultName = file.vault.getName();
-	const path = file.path;
+	const vaultName = encodeURIComponent(file.vault.getName());
+	const path = encodeURIComponent(file.path);
 
 	return `obsidian://open?value=${vaultName}&file=${path}`;
 }
