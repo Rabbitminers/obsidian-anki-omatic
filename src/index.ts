@@ -3,6 +3,7 @@ import { extractQuestionsFromMarkdown, } from './question/parser';
 import { exportQuestionsToCsv } from './anki/csv';
 import { trimExtension } from './file/filename';
 import { handleFileMenu } from './menu';
+import { convertDirectoryToQuestions } from './anki/export';
 
 interface AnkiomaticSettings {
 	mySetting: string;
@@ -40,26 +41,6 @@ export default class AnkiomaticPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'export-document-flashcards-apkg',
-			name: "Export Current Note to Anki APKG",
-			editorCallback: async (editor: Editor, _view: MarkdownView) => {
-				const file = this.app.workspace.getActiveFile();
-
-				if (!file) {
-					return;
-				}
-
-				const filename = trimExtension(file.name);
-
-				const markdown = editor.getValue();
-				const question = extractQuestionsFromMarkdown(markdown, file);
-
-				await exportQuestionsToCsv(question, filename)
-			}
-		});
-
-
-		this.addCommand({
 			id: 'export-document-flashcards-csv',
 			name: 'Export Current Note to Anki CSV',
 			editorCallback: async (editor: Editor, _view: MarkdownView) => {
@@ -72,9 +53,41 @@ export default class AnkiomaticPlugin extends Plugin {
 				const filename = trimExtension(file.name);
 
 				const markdown = editor.getValue();
-				const question = extractQuestionsFromMarkdown(markdown, file);
+				const questions = extractQuestionsFromMarkdown(markdown, file);
 
-				await exportQuestionsToCsv(question, filename)
+				if (questions.length === 0) {
+					new Notice("No flashcards found here");
+					return;
+				}
+
+				await exportQuestionsToCsv(questions, filename)
+			}
+		});
+
+		this.addCommand({
+			id: 'export-folder-flashcards-csv',
+			name: 'Export Current Folder to Anki CSV',
+			editorCallback: async (_editor: Editor, _view: MarkdownView) => {
+				const file = this.app.workspace.getActiveFile();
+
+				if (!file) {
+					return;
+				}
+
+				const parent = file.parent;
+
+				if (!parent) {
+					return;
+				}
+
+				const questions = await convertDirectoryToQuestions(parent);
+
+				if (questions.length === 0) {
+					new Notice("No flashcards found here");
+					return;
+				}
+
+				await exportQuestionsToCsv(questions, parent.name)
 			}
 		});
 
