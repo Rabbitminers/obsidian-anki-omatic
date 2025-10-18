@@ -7,12 +7,12 @@ function formatFilename(name: string) {
 }
 
 export async function exportQuestionsToCsv(questions: Question[], name: string) {
-	const csvLines = [];
+	const csvLines = ["#separator:Comma", "#html:true", `#deck:${name}`, "#columns:Front,Back"];
 
 	for (const question of questions) {
 		const serialized = await serializeQuestion(question);
 
-		csvLines.push(`${serialized.front},${serialized.back}`);
+		csvLines.push(`"${serialized.front}","${serialized.back}"`);
 	}
 
 	const csvContent = csvLines.join("\n")
