@@ -1,5 +1,6 @@
 import { TFile } from "obsidian";
 import { Question } from "./types";
+import { getFileUrl } from "./url";
 
 export const QUESTION_REGEX = /^>\s*\[!question\]-\s*(.+)$/;
 export const CALLOUT_BODY_REGEX = /^>\s?(.*)$/;
@@ -11,6 +12,8 @@ export function splitMarkdownDocument(markdown: string) {
 export function extractQuestionsFromMarkdown(markdown: string, file: TFile) {
 	const lines = splitMarkdownDocument(markdown);
 	const questions: Question[] = [];
+
+	const link = getFileUrl(file);
 
 	let currentQuestion: Question | null = null;
 
@@ -31,7 +34,7 @@ export function extractQuestionsFromMarkdown(markdown: string, file: TFile) {
 			}
 
 			const title = match[1].trim();
-			currentQuestion = { title, body: '', link: file.path };
+			currentQuestion = { title, body: '', link };
 			continue;
 		}
 
