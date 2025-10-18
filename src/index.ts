@@ -2,6 +2,7 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 import { extractQuestionsFromMarkdown, } from './question/parser';
 import { exportQuestionsToCsv } from './anki/csv';
 import { trimExtension } from './file/filename';
+import { handleFileMenu } from './menu';
 
 interface AnkiomaticSettings {
 	mySetting: string;
@@ -51,11 +52,12 @@ export default class AnkiomaticPlugin extends Plugin {
 				const filename = trimExtension(file.name);
 
 				const markdown = editor.getValue();
-				const question = extractQuestionsFromMarkdown(markdown);
+				const question = extractQuestionsFromMarkdown(markdown, file);
 
 				await exportQuestionsToCsv(question, filename)
 			}
 		});
+
 
 		this.addCommand({
 			id: 'export-document-flashcards-csv',
@@ -70,7 +72,7 @@ export default class AnkiomaticPlugin extends Plugin {
 				const filename = trimExtension(file.name);
 
 				const markdown = editor.getValue();
-				const question = extractQuestionsFromMarkdown(markdown);
+				const question = extractQuestionsFromMarkdown(markdown, file);
 
 				await exportQuestionsToCsv(question, filename)
 			}
@@ -79,6 +81,8 @@ export default class AnkiomaticPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
+
+		this.registerEvent(this.app.workspace.on("file-menu", handleFileMenu));
 	}
 
 	onunload() {
