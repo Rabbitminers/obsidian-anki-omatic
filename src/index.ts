@@ -60,7 +60,7 @@ export default class AnkiomaticPlugin extends Plugin {
 					return;
 				}
 
-				await exportQuestionsToCsv(questions, filename)
+				await exportQuestionsToCsv(questions, filename, this.app)
 			}
 		});
 
@@ -87,7 +87,7 @@ export default class AnkiomaticPlugin extends Plugin {
 					return;
 				}
 
-				await exportQuestionsToCsv(questions, parent.name)
+				await exportQuestionsToCsv(questions, parent.name, this.app)
 			}
 		});
 
@@ -95,7 +95,7 @@ export default class AnkiomaticPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
-		this.registerEvent(this.app.workspace.on("file-menu", handleFileMenu));
+		this.registerEvent(this.app.workspace.on("file-menu", (menu, file) => handleFileMenu(menu, file, this.app)));
 	}
 
 	onunload() {
