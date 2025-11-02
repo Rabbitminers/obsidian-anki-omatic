@@ -1,7 +1,7 @@
 {
 	"id": "anki-omatic",
 	"name": "Anki-omatic",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Exports your notes as flashcards to Anki",
 	"author": "Rabbitminers",
